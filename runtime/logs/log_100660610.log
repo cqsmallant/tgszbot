@@ -1,0 +1,51 @@
+{"level":"DEBUG","ts":"2023-06-10T00:24:42.778+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T00:24:43.623+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T00:24:43.624+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T00:24:43.624+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
+{"level":"DEBUG","ts":"2023-06-10T00:29:16.104+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T00:29:16.899+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T00:29:16.901+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T00:29:16.902+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
+{"level":"DEBUG","ts":"2023-06-10T00:31:35.353+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T00:31:36.103+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T00:31:36.106+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T00:31:36.106+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
+{"level":"DEBUG","ts":"2023-06-10T00:36:38.988+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T00:36:39.746+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T00:36:39.751+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T00:36:39.751+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
+{"level":"ERROR","ts":"2023-06-10T00:37:01.362+0800","caller":"telegram/telegram.go:55","msg":"telegram: chat not found (400)"}
+{"level":"DEBUG","ts":"2023-06-10T00:37:29.207+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T00:37:30.018+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T00:37:30.019+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T00:37:30.019+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
+{"level":"ERROR","ts":"2023-06-10T00:40:06.997+0800","caller":"log/log.go:176","msg":"Failed to delete expired completed tasks from queue \"critical\": INTERNAL_ERROR: redis eval error: dial tcp 193.221.95.68:6379: i/o timeout"}
+{"level":"ERROR","ts":"2023-06-10T00:40:07.213+0800","caller":"log/log.go:176","msg":"Failed to write server state data: UNKNOWN: redis command error: SADD failed: dial tcp 193.221.95.68:6379: i/o timeout"}
+{"level":"ERROR","ts":"2023-06-10T00:40:09.273+0800","caller":"log/log.go:176","msg":"Dequeue error: UNKNOWN: redis eval error: dial tcp 193.221.95.68:6379: i/o timeout"}
+{"level":"ERROR","ts":"2023-06-10T00:40:09.334+0800","caller":"log/log.go:176","msg":"Failed to forward scheduled tasks: INTERNAL_ERROR: INTERNAL_ERROR: redis eval error: dial tcp 193.221.95.68:6379: i/o timeout"}
+{"level":"DEBUG","ts":"2023-06-10T00:44:03.548+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T00:44:04.361+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T00:44:04.362+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T00:44:04.363+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
+{"level":"DEBUG","ts":"2023-06-10T00:52:36.512+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T00:52:37.320+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T00:52:37.320+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T00:52:37.320+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
+{"level":"ERROR","ts":"2023-06-10T00:53:10.091+0800","caller":"log/log.go:176","msg":"Failed to forward scheduled tasks: INTERNAL_ERROR: INTERNAL_ERROR: redis eval error: dial tcp 193.221.95.68:6379: i/o timeout"}
+{"level":"ERROR","ts":"2023-06-10T00:53:10.463+0800","caller":"log/log.go:176","msg":"Dequeue error: UNKNOWN: redis eval error: dial tcp 193.221.95.68:6379: i/o timeout"}
+{"level":"ERROR","ts":"2023-06-10T00:53:10.818+0800","caller":"log/log.go:176","msg":"Failed to delete expired completed tasks from queue \"critical\": INTERNAL_ERROR: redis eval error: dial tcp 193.221.95.68:6379: i/o timeout"}
+{"level":"ERROR","ts":"2023-06-10T00:53:11.222+0800","caller":"log/log.go:176","msg":"Failed to write server state data: UNKNOWN: redis command error: SADD failed: dial tcp 193.221.95.68:6379: i/o timeout"}
+{"level":"ERROR","ts":"2023-06-10T00:56:34.092+0800","caller":"telegram/telegram.go:67","msg":"telegram: retry after 3 (429)"}
+{"level":"ERROR","ts":"2023-06-10T00:56:34.092+0800","caller":"mq/qs_task.go:69","msg":"runtime error: invalid memory address or nil pointer dereference"}
+{"level":"DEBUG","ts":"2023-06-10T00:59:20.193+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T00:59:20.923+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T00:59:20.923+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T00:59:20.924+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
+{"level":"DEBUG","ts":"2023-06-10T01:14:16.594+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T01:14:17.416+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T01:14:17.416+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T01:14:17.416+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
+{"level":"DEBUG","ts":"2023-06-10T02:08:25.773+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
+{"level":"DEBUG","ts":"2023-06-10T02:08:26.605+0800","caller":"dao/rdb.go:41","msg":"[store_redis] redis connRdb success,suc=%sPONG"}
+{"level":"INFO","ts":"2023-06-10T02:08:26.606+0800","caller":"log/log.go:162","msg":"Starting processing"}
+{"level":"INFO","ts":"2023-06-10T02:08:26.606+0800","caller":"log/log.go:162","msg":"Send signal TERM or INT to terminate the process"}
