@@ -27,6 +27,13 @@ func GetUserInfoByTgId(tgId string) (*User, error) {
 	return user, err
 }
 
+// GetUserInfoByTgId 通过客户信息
+func GetUserInfoById(id uint64) (*User, error) {
+	user := &User{}
+	err := dao.Mdb.Model(&User{}).Limit(1).Find(user, "id = ?", id).Error
+	return user, err
+}
+
 func AddUser(user *User) (*User, error) {
 	user.CreateTime = time.Now().Unix()
 	err := dao.Mdb.Model(user).Create(user).Error
