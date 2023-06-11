@@ -7,6 +7,7 @@ import (
 	"ant/utils/dao"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"time"
@@ -198,12 +199,34 @@ func xzInfoBytxTypeInt(xzType int) string {
 	}
 	return str
 }
+
+// 检查封盘
+func fnQsLocked(ctx tg.Context) (model.Qs, error) {
+	var qs model.Qs
+	msgObj := ctx.Message()
+	//是否可以下注
+	qsPayload, err := dao.Rdb.Get(context.Background(), constant.CacheQsNow).Result()
+	if err == redis.Nil || err != nil {
+		ctx.Send(gameLockedTemp, &tg.SendOptions{
+			ReplyTo: msgObj,
+		})
+		return qs, err
+	}
+	err = json.Unmarshal([]byte(qsPayload), &qs)
+	if err != nil || qs.Status != 1 {
+		ctx.Send(gameLockedTemp, &tg.SendOptions{
+			ReplyTo: msgObj,
+		})
+		return qs, errors.New("已封盘")
+	}
+	return qs, nil
+}
 func OnTextMessageHandle(ctx tg.Context) error {
+
 	//群入口
 	if ctx.Message().FromGroup() {
 		msgObj := ctx.Message()
 		txt := msgObj.Text
-		var qs model.Qs
 		var err error
 		//特定群配置
 		//todo
@@ -217,30 +240,26 @@ func OnTextMessageHandle(ctx tg.Context) error {
 				ParseMode: tg.ModeHTML,
 			})
 		}
+		kfUrlConfig, _ := model.GetConfigByName("kf_url")
+		kfNameConfig, _ := model.GetConfigByName("kf_name")
 
 		//充值
 		tzRx := regexp.MustCompile(`^(充值)(\d*)`)
 		match := tzRx.FindStringSubmatch(txt)
 		if match != nil {
-			return ctx.Send(jsKfTemp, &tg.SendOptions{
-				ReplyTo: msgObj,
+			return ctx.Send(fmt.Sprintf("%s<a href='%s'>@%s</a>", jsKfTemp, kfUrlConfig.Value, kfNameConfig.Value), &tg.SendOptions{
+				ReplyTo:   msgObj,
+				ParseMode: tg.ModeHTML,
 			})
 		}
-
-		//是否可以下注
-		qsPayload, err := dao.Rdb.Get(context.Background(), constant.CacheQsNow).Result()
-		if err == redis.Nil || err != nil {
-			ctx.Send(gameLockedTemp, &tg.SendOptions{
-				ReplyTo: msgObj,
+		//提现
+		txRx := regexp.MustCompile(`^(提现)(\d*)`)
+		match = txRx.FindStringSubmatch(txt)
+		if match != nil {
+			return ctx.Send(fmt.Sprintf("%s<a href='%s'>@%s</a>", jsKfTemp, kfUrlConfig.Value, kfNameConfig.Value), &tg.SendOptions{
+				ReplyTo:   msgObj,
+				ParseMode: tg.ModeHTML,
 			})
-			return err
-		}
-		err = json.Unmarshal([]byte(qsPayload), &qs)
-		if err != nil || qs.Status != 1 {
-			ctx.Send(gameLockedTemp, &tg.SendOptions{
-				ReplyTo: msgObj,
-			})
-			return err
 		}
 
 		//更新个人信息
@@ -263,6 +282,12 @@ func OnTextMessageHandle(ctx tg.Context) error {
 		xz1Rx := regexp.MustCompile(`^(大|小|单|双|大单|大双|小单|小双|对子|顺子|豹子)(\d+)`)
 		match = xz1Rx.FindStringSubmatch(txt)
 		if match != nil {
+			//过滤封盘
+			qs, err := fnQsLocked(ctx)
+			if err != nil {
+				return err
+			}
+
 			xzType := match[1]
 			xzMoney := match[2]
 			xzMoneyF := mathutil.MustFloat(xzMoney)
@@ -335,13 +360,20 @@ func OnTextMessageHandle(ctx tg.Context) error {
 			}
 			replyMsg := fmt.Sprintf(xzGameStr, qs.Sn, beginDate, endDate, tzItemStr, user.Nickname, user.Money)
 			return ctx.Send(replyMsg, &tg.SendOptions{
-				ReplyTo:   msgObj,
-				ParseMode: tg.ModeHTML,
+				ReplyTo:     msgObj,
+				ParseMode:   tg.ModeHTML,
+				ReplyMarkup: &tg.ReplyMarkup{InlineKeyboard: fnGroupInKeyBoard(qs.Sn)},
 			})
 		}
 		xz2Rx := regexp.MustCompile(`^(\d+)杀(\d+)`)
 		match = xz2Rx.FindStringSubmatch(txt)
 		if match != nil {
+			//过滤封盘
+			qs, err := fnQsLocked(ctx)
+			if err != nil {
+				return err
+			}
+
 			xzType := match[1]
 			xzTypeI := mathutil.MustInt(xzType)
 			xzMoney := match[2]
@@ -421,8 +453,9 @@ func OnTextMessageHandle(ctx tg.Context) error {
 			}
 			replyMsg := fmt.Sprintf(xzGameStr, qs.Sn, beginDate, endDate, tzItemStr, user.Nickname, user.Money)
 			return ctx.Send(replyMsg, &tg.SendOptions{
-				ReplyTo:   msgObj,
-				ParseMode: tg.ModeHTML,
+				ReplyTo:     msgObj,
+				ParseMode:   tg.ModeHTML,
+				ReplyMarkup: &tg.ReplyMarkup{InlineKeyboard: fnGroupInKeyBoard(qs.Sn)},
 			})
 		}
 		//删除无关消息
@@ -437,6 +470,175 @@ func OnTextMessageHandle(ctx tg.Context) error {
 		})
 	}
 	return nil
+}
+
+func fnGroupInKeyBoard(qsSn string) [][]tg.InlineButton {
+	kfUrlConfig, _ := model.GetConfigByName("kf_url")
+	userMoneyBtn := tg.InlineButton{
+		Text:   "当前余额",
+		Unique: "userMoney",
+	}
+	Bots.Handle(&userMoneyBtn, fnUserMoney)
+	curStakeBtn := tg.InlineButton{
+		Text:   "当前投注",
+		Unique: "curStake",
+		Data:   qsSn,
+	}
+	Bots.Handle(&curStakeBtn, fnCurStake)
+
+	historyStakeBtn := tg.InlineButton{
+		Text:   "最近投注",
+		Unique: "historyStake",
+	}
+	Bots.Handle(&historyStakeBtn, fnHistoryStake)
+
+	billBtn := tg.InlineButton{
+		Text:   "账单记录",
+		Unique: "bill",
+	}
+	Bots.Handle(&billBtn, fnBillBtn)
+	rechargeBtn := tg.InlineButton{
+		Text:   fmt.Sprintf("我要充值"),
+		Unique: "recharge",
+		URL:    kfUrlConfig.Value,
+	}
+	withdrawalBtn := tg.InlineButton{
+		Text:   fmt.Sprintf("我要提现"),
+		Unique: "recharge",
+		URL:    kfUrlConfig.Value,
+	}
+	btns := [][]tg.InlineButton{{userMoneyBtn, curStakeBtn}, {historyStakeBtn, billBtn}, {rechargeBtn, withdrawalBtn}}
+	return btns
+}
+
+// ========================================================
+// ======================群信息==========================
+// ========================================================
+// 账单记录
+func fnBillBtn(ctx tg.Context) error {
+	msg := "最近无账单记录"
+	//更新个人信息
+	sender := ctx.Callback().Sender
+	list, err := model.GetBillByTgId(strutil.MustString(sender.ID), 5)
+	if err != nil {
+		return ctx.Respond(&tg.CallbackResponse{
+			CallbackID: ctx.Callback().ID,
+			Text:       msg,
+			ShowAlert:  true,
+		})
+	}
+	if len(*list) > 0 {
+		msg = ""
+		for _, item := range *list {
+			msg += time.Unix(item.CreateTime, 0).Format("2006-01-02")
+			if item.Type == 1 {
+				msg += fmt.Sprintf("\t充值：+%.2f", item.Money)
+			}
+			if item.Type == 2 {
+				msg += fmt.Sprintf("\t提现：-%.2f", item.Money)
+			}
+			if item.Type == 3 {
+				msg += fmt.Sprintf("\t下注：-%.2f", item.Money)
+			}
+			if item.Type == 4 {
+				msg += fmt.Sprintf("\t中奖：+%.2f", item.Money)
+			}
+			msg += "\n"
+		}
+	}
+	return ctx.Respond(&tg.CallbackResponse{
+		CallbackID: ctx.Callback().ID,
+		Text:       msg,
+		ShowAlert:  true,
+	})
+
+}
+
+// 最近投注
+func fnHistoryStake(ctx tg.Context) error {
+	msg := "最近无投注记录"
+	//更新个人信息
+	sender := ctx.Callback().Sender
+	list, err := model.GetOrderByTgId(strutil.MustString(sender.ID), 5)
+	if err != nil {
+		return ctx.Respond(&tg.CallbackResponse{
+			CallbackID: ctx.Callback().ID,
+			Text:       msg,
+			ShowAlert:  true,
+		})
+	}
+	if len(*list) > 0 {
+		msg = ""
+		for _, item := range *list {
+			stake := xzInfoBytxTypeInt(item.Stake)
+			money := "中奖：-"
+			if item.Status == 1 {
+				money = fmt.Sprintf("中奖：+%.2f", item.ResMoney)
+			}
+
+			if item.Status == 2 {
+				money = fmt.Sprintf("中奖：-%.2f", item.ResMoney)
+			}
+			msg += fmt.Sprintf("%s-%.2f(赔率 1:%.2f)\t%s\n", stake, item.Money, item.Rate, money)
+		}
+	}
+	return ctx.Respond(&tg.CallbackResponse{
+		CallbackID: ctx.Callback().ID,
+		Text:       msg,
+		ShowAlert:  true,
+	})
+}
+
+// 当前投注
+func fnCurStake(ctx tg.Context) error {
+
+	msg := "当前无投注记录"
+	//更新个人信息
+	sender := ctx.Callback().Sender
+	qsSn := strutil.MustString(ctx.Data())
+	if qsSn == "" {
+		return ctx.Respond(&tg.CallbackResponse{
+			CallbackID: ctx.Callback().ID,
+			Text:       msg,
+			ShowAlert:  true,
+		})
+	}
+
+	list, err := model.GetOrderByQsSnAndTgId(qsSn, strutil.MustString(sender.ID))
+	if err != nil {
+		return ctx.Respond(&tg.CallbackResponse{
+			CallbackID: ctx.Callback().ID,
+			Text:       msg,
+			ShowAlert:  true,
+		})
+	}
+	if len(*list) > 0 {
+		msg = ""
+		for _, item := range *list {
+			stake := xzInfoBytxTypeInt(item.Stake)
+			msg += fmt.Sprintf("%s - %.2f （赔率 1:%.2f）\n", stake, item.Money, item.Rate)
+		}
+	}
+	return ctx.Respond(&tg.CallbackResponse{
+		CallbackID: ctx.Callback().ID,
+		Text:       msg,
+		ShowAlert:  true,
+	})
+}
+
+// 当前余额
+func fnUserMoney(ctx tg.Context) error {
+	//更新个人信息
+	sender := ctx.Callback().Sender
+	user, err := model.GetUserInfoByTgId(strutil.MustString(sender.ID))
+	if err != nil {
+		return err
+	}
+	return ctx.Respond(&tg.CallbackResponse{
+		CallbackID: ctx.Callback().ID,
+		Text:       fmt.Sprintf("【账户ID】：%s\n【账户昵称】：%s\n【账户余额】：%.2f", user.TgId, user.Nickname, user.Money),
+		ShowAlert:  true,
+	})
 }
 
 // ========================================================

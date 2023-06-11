@@ -1,23 +1,19 @@
 package mq
 
 import (
+	"ant/utils/config"
 	"ant/utils/log"
-	"fmt"
 
 	"github.com/hibiken/asynq"
-	"github.com/spf13/viper"
 )
 
 var MClient *asynq.Client
 
 func Start() {
 	redis := asynq.RedisClientOpt{
-		Addr: fmt.Sprintf(
-			"%s:%s",
-			viper.GetString("redis_host"),
-			viper.GetString("redis_port")),
-		DB:       viper.GetInt("redis_db"),
-		Password: viper.GetString("redis_passwd"),
+		Addr:     config.RedisDns,
+		DB:       config.RedisDb,
+		Password: config.RedisPwd,
 	}
 	InitClient(redis)
 	go initServe(redis)
@@ -31,12 +27,12 @@ func initServe(redis asynq.RedisClientOpt) {
 	srv := asynq.NewServer(redis,
 		asynq.Config{
 			// 每个进程并发执行的worker数量
-			Concurrency: viper.GetInt("queue_concurrency"),
+			Concurrency: config.QueueConcurrency,
 			// （可选）指定具有不同优先级的多个队列
 			Queues: map[string]int{
-				"critical": viper.GetInt("queue_level_critical"),
-				"default":  viper.GetInt("queue_level_default"),
-				"low":      viper.GetInt("queue_level_low"),
+				"critical": config.QueueLevelCritical,
+				"default":  config.QueueLevelDefault,
+				"low":      config.QueueLevelLow,
 			},
 			Logger: log.Sugar,
 		})

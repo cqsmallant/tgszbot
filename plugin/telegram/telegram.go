@@ -32,8 +32,6 @@ func BotStart() {
 }
 
 func RegisterHandle() {
-	// adminOnly := bots.Group()
-	// adminOnly.Use(middleware.Whitelist(config.TgManage))
 
 	Bots.Handle(START_CMD, AccountInfo)
 
@@ -46,7 +44,7 @@ func RegisterHandle() {
 func SendToBot(msg string) {
 	go func() {
 		user := tg.User{
-			ID: config.TgManage,
+			ID: config.TgGroupId,
 		}
 		_, err := Bots.Send(&user, msg, &tg.SendOptions{
 			ParseMode: tg.ModeHTML,
@@ -57,10 +55,25 @@ func SendToBot(msg string) {
 	}()
 }
 
+func SendToBotInBtns(msg string, qsSn string) {
+	go func() {
+		user := tg.User{
+			ID: config.TgGroupId,
+		}
+		_, err := Bots.Send(&user, msg, &tg.SendOptions{
+			ParseMode:   tg.ModeHTML,
+			ReplyMarkup: &tg.ReplyMarkup{InlineKeyboard: fnGroupInKeyBoard(qsSn)},
+		})
+		if err != nil {
+			log.Sugar.Error(err)
+		}
+	}()
+}
+
 func SendToDice() int {
 	diceObj := &tg.Dice{}
 	user := tg.User{
-		ID: config.TgManage,
+		ID: config.TgGroupId,
 	}
 	msg, err := diceObj.Send(Bots, &user, &tg.SendOptions{})
 	if err != nil {

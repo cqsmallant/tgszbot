@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gookit/color"
-	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -20,7 +19,7 @@ func MysqlInit() {
 	var err error
 	Mdb, err = gorm.Open(mysql.Open(config.MysqlDns), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   viper.GetString("mysql_table_prefix"),
+			TablePrefix:   config.MysqlTablePrefix,
 			SingularTable: true,
 		},
 		Logger: logger.Default.LogMode(logger.Error),
@@ -36,9 +35,9 @@ func MysqlInit() {
 		color.Red.Printf("[store_db] mysql get DB,err=%s\n", err)
 		panic(err)
 	}
-	sqlDB.SetMaxIdleConns(viper.GetInt("mysql_max_idle_conns"))
-	sqlDB.SetMaxOpenConns(viper.GetInt("mysql_max_open_conns"))
-	sqlDB.SetConnMaxLifetime(time.Hour * time.Duration(viper.GetInt("mysql_max_life_time")))
+	sqlDB.SetMaxIdleConns(config.MysqlMaxIdleConns)
+	sqlDB.SetMaxOpenConns(config.MysqlMaxOpenConns)
+	sqlDB.SetConnMaxLifetime(time.Hour * time.Duration(config.MysqlMaxLifeTime))
 	err = sqlDB.Ping()
 	if err != nil {
 		color.Red.Printf("[store_db] mysql connDB err:%s", err.Error())

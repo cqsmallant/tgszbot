@@ -37,6 +37,27 @@ func OrderList() ([]Order, error) {
 	return list, err
 }
 
+// 根据期数SN和TGID
+func GetOrderByQsSnAndTgId(qsSn string, tgId string) (*[]Order, error) {
+	list := &[]Order{}
+	err := dao.Mdb.Model(&Order{}).Where("qs_sn = ?", qsSn).Where("tg_id = ?", tgId).Find(list).Error
+	return list, err
+}
+
+// 根据期数ID和TGID
+func GetOrderByQsIdAndTgId(qsId uint64, tgId string) (*[]Order, error) {
+	list := &[]Order{}
+	err := dao.Mdb.Model(&Order{}).Where("qs_id = ?", qsId).Where("tg_id = ?", tgId).Find(list).Error
+	return list, err
+}
+
+// 根据TGID
+func GetOrderByTgId(tgId string, limit int) (*[]Order, error) {
+	list := &[]Order{}
+	err := dao.Mdb.Model(&Order{}).Where("tg_id = ?", tgId).Limit(limit).Find(list).Error
+	return list, err
+}
+
 func GetOrderByQsId(qsId uint64) (*[]Order, error) {
 	list := &[]Order{}
 	err := dao.Mdb.Model(&Order{}).Where("qs_id = ?", qsId).Find(list).Error

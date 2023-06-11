@@ -5,7 +5,6 @@ import (
 )
 
 type AuthRule struct {
-	title uint64 `gorm:"column:title" json:"title"`
 	BaseModel
 }
 

@@ -33,12 +33,13 @@ func main() {
 	// time.Sleep(time.Duration(30) * time.Second)
 	// res3, _ := dao.Rdb.Get(ctx, constant.CacheQsNow).Result()
 	// println(string(res3))
-	mqtest()
+	// mqtest()
 	// diceArr := []int{3, 7, 2}
 	// sort.Ints(diceArr)
 	// println(diceArr[0])
 	// println(diceArr[1])
 	// println(diceArr[2])
+	println(viper.GetString("api_proxy"))
 }
 
 func mqtest() {

@@ -1,32 +1,28 @@
 package dao
 
 import (
+	"ant/utils/config"
 	"ant/utils/log"
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/gookit/color"
-	"github.com/spf13/viper"
 )
 
 var Rdb *redis.Client
 
 func RedisInit() {
 	options := redis.Options{
-		Addr: fmt.Sprintf(
-			"%s:%s",
-			viper.GetString("redis_host"),
-			viper.GetString("redis_port")), // Redis地址
-		DB:          viper.GetInt("redis_db"),                                        // Redis库
-		PoolSize:    viper.GetInt("redis_poo_size"),                                  // Redis连接池大小
-		MaxRetries:  viper.GetInt("redis_max_retries"),                               // 最大重试次数
-		IdleTimeout: time.Second * time.Duration(viper.GetInt("redis_idle_timeout")), // 空闲链接超时时间
+		Addr:        config.RedisDns,                                      // Redis地址
+		DB:          config.RedisDb,                                       // Redis库
+		PoolSize:    config.RedisPooSize,                                  // Redis连接池大小
+		MaxRetries:  config.RedisMaxRetries,                               // 最大重试次数
+		IdleTimeout: time.Second * time.Duration(config.RedisIdleTimeout), // 空闲链接超时时间
 	}
 
-	if viper.GetString("redis_passwd") != "" {
-		options.Password = viper.GetString("redis_passwd")
+	if config.RedisPwd != "" {
+		options.Password = config.RedisPwd
 	}
 	Rdb = redis.NewClient(&options)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

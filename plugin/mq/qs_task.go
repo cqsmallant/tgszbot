@@ -278,7 +278,7 @@ func QsClosedHandle(ctx context.Context, t *asynq.Task) error {
 		//开奖通知
 		openGameStr := "<b>第<code>%s</code>期开奖结果：\n%s \n\n🎉🎉恭喜以下中奖玩家🎉🎉\n</b>%s"
 		resGames := fmt.Sprintf("%d %d %d = %d %s %s", dice1Val, dice2Val, dice3Val, diceSum, diceDx, diceDs)
-		telegram.SendToBot(fmt.Sprintf(openGameStr, qs.Sn, resGames, zjTemp))
+		telegram.SendToBotInBtns(fmt.Sprintf(openGameStr, qs.Sn, resGames, zjTemp), qs.Sn)
 
 		//最近10期结果通知
 		qsListStr := "Telegram 官方骰子，具体玩法看置顶\n\n----最近10期结果----\n"
@@ -306,7 +306,7 @@ func QsClosedHandle(ctx context.Context, t *asynq.Task) error {
 			}
 			qsListStr += fmt.Sprintf("<code>%s</code>期 %s = %d %s \n", item.Sn, item.Res, item.Sum, kjType)
 		}
-		telegram.SendToBot(qsListStr)
+		telegram.SendToBotInBtns(qsListStr, qs.Sn)
 
 		//更新期数
 		qs.Status = 3

@@ -20,3 +20,10 @@ func ConfigList() ([]Config, error) {
 	err := dao.Mdb.Model(&Config{}).Find(&list).Error
 	return list, err
 }
+
+// GetConfigByName 通过客户信息
+func GetConfigByName(name string) (*Config, error) {
+	info := new(Config)
+	err := dao.Mdb.Model(info).Where(" name = ?", name).Find(info).Error
+	return info, err
+}
