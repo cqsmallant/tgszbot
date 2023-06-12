@@ -1,5 +1,5 @@
 .idea/
 runtime/
 .DS_Store
-app.env
+*.env
 dev/app.env
