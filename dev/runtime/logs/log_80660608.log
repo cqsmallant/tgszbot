@@ -1,5 +1,0 @@
-{"level":"DEBUG","ts":"2023-06-08T16:56:30.682+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
-{"level":"DEBUG","ts":"2023-06-08T16:57:58.473+0800","caller":"dao/mdb.go:48","msg":"[store_db] mysql connDB success"}
-{"level":"DEBUG","ts":"2023-06-08T16:59:11.937+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
-{"level":"DEBUG","ts":"2023-06-08T16:59:59.563+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
-{"level":"DEBUG","ts":"2023-06-08T17:00:37.965+0800","caller":"dao/mdb.go:47","msg":"[store_db] mysql connDB success"}
