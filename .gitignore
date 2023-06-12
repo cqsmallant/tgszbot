@@ -1,5 +1,5 @@
 .idea/
-src/runtime/
+runtime/
 .DS_Store
 app.env
 dev/app.env
