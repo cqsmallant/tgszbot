@@ -17,6 +17,7 @@ type Qs struct {
 	Dz        int    `gorm:"column:dz" json:"dz"`
 	Sz        int    `gorm:"column:sz" json:"sz"`
 	Bz        int    `gorm:"column:bz" json:"bz"`
+	TaskId    string `gorm:"column:task_id" json:"task_id"`
 	BaseModel
 }
 

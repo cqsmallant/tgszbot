@@ -33,6 +33,7 @@ var (
 	LogMaxAge     int
 	TgBotToken    string
 	TgGroupId     int64
+	TgBotUsername string
 	ApiProxy      string
 	TrcToken      string
 	QsStep        int
@@ -68,6 +69,7 @@ func init() {
 	LogMaxSize = viper.GetInt("log_max_size")
 
 	TgBotToken = viper.GetString("tg_bot_token")
+	TgBotUsername = viper.GetString("tg_bot_username")
 	TgGroupId = viper.GetInt64("tg_group_id")
 	ApiProxy = viper.GetString("api_proxy")
 	//充值地址

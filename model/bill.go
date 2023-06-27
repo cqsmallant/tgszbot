@@ -23,14 +23,14 @@ func (bill *Bill) TableName() string {
 
 func BillList() ([]Bill, error) {
 	list := []Bill{}
-	err := dao.Mdb.Model(&Bill{}).Find(&list).Error
+	err := dao.Mdb.Model(&Bill{}).Order("id desc").Find(&list).Error
 	return list, err
 }
 
 // 获取列表
 func GetBillByTgId(tgId string, limit int) (*[]Bill, error) {
 	list := &[]Bill{}
-	err := dao.Mdb.Model(&Bill{}).Where("tg_id = ?", tgId).Limit(limit).Find(list).Error
+	err := dao.Mdb.Model(&Bill{}).Where("tg_id = ?", tgId).Limit(limit).Order("id desc").Find(list).Error
 	return list, err
 }
 

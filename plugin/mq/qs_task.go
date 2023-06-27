@@ -9,6 +9,7 @@ import (
 	"ant/utils/log"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"sync"
@@ -54,18 +55,18 @@ func QsStartHandle(ctx context.Context, t *asynq.Task) error {
 		qs.Status = 1
 		model.EditQs(&qs)
 
-		qsLockingTime := qs.EndTime - time.Now().Unix() - 30
+		qsTime := qs.EndTime - time.Now().Unix()
 		//设置缓存
 		payload, _ := json.Marshal(qs)
-		dao.Rdb.Set(ctx, constant.CacheQsNow, payload, time.Duration(qsLockingTime+30)*time.Second)
-
+		dao.Rdb.Set(ctx, constant.CacheQsNow, payload, time.Duration(qsTime)*time.Second)
 		//前30封盘提醒
 		qsLockingQueue, _ := NewQsLockingTask(&qs)
-		MClient.Enqueue(qsLockingQueue, asynq.ProcessIn(time.Duration(qsLockingTime)*time.Second))
+		MClient.Enqueue(qsLockingQueue, asynq.ProcessIn(time.Duration(qsTime-30)*time.Second))
 
 		//前10秒已封盘
 		qsLockedQueue, _ := NewQsLockedTask(&qs)
-		MClient.Enqueue(qsLockedQueue, asynq.ProcessIn(time.Duration(qsLockingTime+20)*time.Second))
+		MClient.Enqueue(qsLockedQueue, asynq.ProcessIn(time.Duration(qsTime-20)*time.Second))
+
 	}
 
 	return nil
@@ -78,6 +79,18 @@ func QsClosedHandle(ctx context.Context, t *asynq.Task) error {
 		return err
 	}
 	defer func() {
+		//新的一盘
+		now := time.Now()
+		newQs, _ := model.GetQsListByTime(now.Unix() + 10)
+		if newQs.TaskId == "" {
+			qsStartQueue, _ := NewQsStartTask(newQs)
+			taskinfo, err := MClient.Enqueue(qsStartQueue, asynq.ProcessIn(time.Duration(2)*time.Second))
+			newQs.TaskId = taskinfo.ID
+			model.EditQs(newQs)
+			if err != nil {
+				log.Sugar.Error(err)
+			}
+		}
 
 		if err := recover(); err != nil {
 			log.Sugar.Error(err)
@@ -223,7 +236,7 @@ func QsClosedHandle(ctx context.Context, t *asynq.Task) error {
 				item.Res = fmt.Sprintf("%d,%d,%d", dice1Val, dice2Val, dice3Val)
 				item.Sum = diceSum
 				if item.Status == 1 {
-					item.ResMoney = item.Money * item.Rate
+					item.ResMoney = item.Money*item.Rate + item.Money
 					user, err := model.GetUserInfoById(item.UserId)
 					if err != nil {
 						tx.Rollback()
@@ -323,11 +336,8 @@ func QsClosedHandle(ctx context.Context, t *asynq.Task) error {
 		qs.Res = fmt.Sprintf("%d,%d,%d", dice1Val, dice2Val, dice3Val)
 		model.EditQs(&qs)
 
-		//新的一盘
-		now := time.Now()
-		newQs, _ := model.GetQsListByTime(now.Unix() + 10)
-		qsStartQueue, _ := NewQsStartTask(newQs)
-		MClient.Enqueue(qsStartQueue, asynq.ProcessIn(time.Duration(2)*time.Second))
+	} else {
+		return errors.New("结算失败")
 	}
 	return nil
 }
@@ -401,7 +411,8 @@ func QsLockedHandle(ctx context.Context, t *asynq.Task) error {
 		//设置缓存
 		payload, _ := json.Marshal(qs)
 		dao.Rdb.Set(ctx, constant.CacheQsNow, payload, time.Duration(8)*time.Second)
-		//前5秒已结束
+
+		//已结束
 		qsClosedQueue, _ := NewQsClosedTask(&qs)
 		MClient.Enqueue(qsClosedQueue, asynq.ProcessIn(time.Duration(8)*time.Second))
 	}

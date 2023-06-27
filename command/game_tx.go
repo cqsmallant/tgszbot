@@ -3,6 +3,7 @@ package command
 import (
 	"ant/model"
 	"ant/plugin/mq"
+	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -22,5 +23,9 @@ func gameStart() {
 	qs, _ := model.GetQsListByTime(now.Unix())
 
 	qsStartQueue, _ := mq.NewQsStartTask(qs)
-	mq.MClient.Enqueue(qsStartQueue)
+	taskInfo, err := mq.MClient.Enqueue(qsStartQueue)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v", taskInfo)
 }

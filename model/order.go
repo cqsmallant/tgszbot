@@ -54,7 +54,7 @@ func GetOrderByQsIdAndTgId(qsId uint64, tgId string) (*[]Order, error) {
 // 根据TGID
 func GetOrderByTgId(tgId string, limit int) (*[]Order, error) {
 	list := &[]Order{}
-	err := dao.Mdb.Model(&Order{}).Where("tg_id = ?", tgId).Limit(limit).Find(list).Error
+	err := dao.Mdb.Model(&Order{}).Where("tg_id = ?", tgId).Limit(limit).Order("id desc").Find(list).Error
 	return list, err
 }
 

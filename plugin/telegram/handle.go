@@ -498,13 +498,13 @@ func fnGroupInKeyBoard(qsSn string) [][]tg.InlineButton {
 	}
 	Bots.Handle(&billBtn, fnBillBtn)
 	rechargeBtn := tg.InlineButton{
-		Text:   fmt.Sprintf("我要充值"),
+		Text:   "我要充值",
 		Unique: "recharge",
-		URL:    kfUrlConfig.Value,
+		URL:    fmt.Sprintf("https://t.me/%s", config.TgBotUsername),
 	}
 	withdrawalBtn := tg.InlineButton{
-		Text:   fmt.Sprintf("我要提现"),
-		Unique: "recharge",
+		Text:   "我要提现",
+		Unique: "withdrawal",
 		URL:    kfUrlConfig.Value,
 	}
 	btns := [][]tg.InlineButton{{userMoneyBtn, curStakeBtn}, {historyStakeBtn, billBtn}, {rechargeBtn, withdrawalBtn}}
@@ -816,13 +816,13 @@ func fnRechargeLnKeyBoard() [][]tg.InlineButton {
 	configList, _ := model.ConfigList()
 	kfUrl := configList[19].Value
 	rechargeBtn := tg.InlineButton{
-		Text:   "💰充值",
+		Text:   "💰充值客服",
 		Unique: "rechargeUrl",
 		URL:    kfUrl,
 	}
 
 	rechargeListBtn := tg.InlineButton{
-		Text:   "🗓记录",
+		Text:   "🗓充值记录",
 		Unique: "rechargeList",
 	}
 	Bots.Handle(&rechargeListBtn, fnRechargeList)
@@ -861,13 +861,13 @@ func fnWithdrawalLnKeyBoard() [][]tg.InlineButton {
 	configList, _ := model.ConfigList()
 	kfUrl := configList[19].Value
 	withdrawalBtn := tg.InlineButton{
-		Text:   "🍮提现",
+		Text:   "🍮提现客服",
 		Unique: "withdrawalUrl",
 		URL:    kfUrl,
 	}
 
 	withdrawalListBtn := tg.InlineButton{
-		Text:   "🗓记录",
+		Text:   "🗓提现记录",
 		Unique: "withdrawalList",
 	}
 	Bots.Handle(&withdrawalListBtn, fnWithdrawalList)
